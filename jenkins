@@ -3,13 +3,13 @@ pipeline
     agent any
         tools {maven "mymvn"}
             stages {
-                stage('SCM git clone') {
+                stage("git clone") {
                     steps 
                     {
                     git credentialsId: 'Sunny', url: 'https://github.com/Pathi-lab/Calculator.git'
                     }
                  }
-                stage('BUILD') {
+                stage("Build") {
                      steps 
                      {
                         script {
