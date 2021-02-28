@@ -1,0 +1,64 @@
+pipeline 
+{
+    agent any
+        tools {maven "mymvn"}
+            stages {
+                stage('SCM git clone') {
+                    steps 
+                    {
+                    git credentialsId: 'Sunny', url: 'https://github.com/Pathi-lab/Calculator.git'
+                    }
+                 }
+                stage('BUILD') {
+                     steps 
+                     {
+                        script {
+                                 sh 'mvn clean install'
+                }
+               
+            }
+        }
+                Stage('test') {
+                    steps 
+                    {
+                        script {
+                                 sh 'echo "unit_test_cases"'
+                }
+                
+            }
+        }
+                Stage('publish - jforg') {
+                  steps {
+                          script { 
+                             rtUpload (
+                                serverId: 'myfrog',
+                                    spec: '''{
+                                        "files": [
+                                {
+                                           "pattern": "target/*.jar",
+                                                 "target": "http://34.231.70.144:8082/ui/admin/repositories/local/Calculator/**/*",
+                                }
+                            ]
+                        }''',
+             )
+
+            }
+             
+        }
+    }   
+               stage('deploy'){  
+                 steps {
+                         script {
+                            sh 'echo "ansible -command" '
+                            }
+                     } 
+                    }
+            }
+
+             post {
+                 always{
+            mail bcc: '', body: 'This is the status of the "$(BUILD_NUMBER)-$(JOB_NAME)" and you can find the logs at "$(JENKINS_URL)"', cc: '', from: '', replyTo: '', subject: 'status of "$(BUILD_NUMBER)-$(JOB_NAME)"', to: 'anangsunny@gmail.com'
+                 }
+           }
+
+}
